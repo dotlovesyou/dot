@@ -12,10 +12,10 @@
         }
     },
     "shutdownAction": "stopContainer",
-    "workspaceFolder": "/workspaces/pippin-draft",
+    "workspaceFolder": "/workspaces/dot-draft",
     "runArgs": [
         "--name",
-        "python-3.12-pippin",
+        "python-3.12-dot",
         "--env-file",
         "${localWorkspaceFolder}/.devcontainer/devcontainer.env"
     ],

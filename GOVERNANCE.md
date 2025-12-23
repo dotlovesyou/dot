@@ -1,6 +1,6 @@
 # Governance
 
-Welcome to the **Pippin Framework** Governance Document! This document outlines how decisions are made and the roles within the project. Our governance model emphasizes community participation, ensuring that contributors have a significant role in shaping the project's future. The project owner serves as a mediator for major changes or conflicts to maintain the project's integrity and vision.
+Welcome to the **Dot Framework** Governance Document! This document outlines how decisions are made and the roles within the project. Our governance model emphasizes community participation, ensuring that contributors have a significant role in shaping the project's future. The project owner serves as a mediator for major changes or conflicts to maintain the project's integrity and vision.
 
 ## 🚀 Governance Structure
 

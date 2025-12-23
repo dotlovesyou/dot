@@ -28,7 +28,7 @@ class AnalyzeNewCommitsActivity(ActivityBase):
         super().__init__()
         self.composio_action = "GITHUB_LIST_COMMITS"
         self.github_owner = "yoheinakajima"  # example githubt username
-        self.github_repo = "pippin"  # example repo
+        self.github_repo = "dot"  # example repo
         self.github_branch = "main"
         self.lookback_hours = 144  # hours to look back
 

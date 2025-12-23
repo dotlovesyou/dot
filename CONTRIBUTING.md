@@ -1,13 +1,13 @@
-# Contributing to Pippin Framework
+# Contributing to Dot Framework
 
-Thank you for your interest in contributing to the **Pippin Framework**! 🎉 Your contributions help make this project better for everyone.
+Thank you for your interest in contributing to the **Dot Framework**! 🎉 Your contributions help make this project better for everyone.
 
 ## **By Contributing, You Agree To**
 
 By submitting a pull request, you affirm that you have the right to license your contributions under the [MIT License](./LICENSE) and agree to the following:
 
 - **Ownership:** You retain ownership of any intellectual property rights you hold in your contributions.
-- **License Grant:** You grant Pippin and its users a perpetual, worldwide, non-exclusive, royalty-free license to use, modify, and distribute your contributions under the terms of the [MIT License](./LICENSE).
+- **License Grant:** You grant Dot and its users a perpetual, worldwide, non-exclusive, royalty-free license to use, modify, and distribute your contributions under the terms of the [MIT License](./LICENSE).
 - **No Restrictions:** Your contributions do not infringe upon any third-party rights and are free from any restrictions that would prevent them from being licensed under the MIT License.
 
 ## Table of Contents
@@ -23,11 +23,11 @@ By submitting a pull request, you affirm that you have the right to license your
   - [Available Tags](#available-tags)
   - [Tagging Guidelines](#tagging-guidelines)
   - [Escalating and Prioritizing Issues](#escalating-and-prioritizing-issues)
-- [Keeping Pippin Simple](#keeping-pippin-simple)
+- [Keeping Dot Simple](#keeping-dot-simple)
 - [Using Composio](#using-composio)
 - [Enhancing Framework Usability](#enhancing-framework-usability)
 - [External Integrations](#external-integrations)
-- [Expanding Pippin with Skills and Activities (Planned)](#expanding-pippin-with-skills-and-activities-planned)
+- [Expanding Dot with Skills and Activities (Planned)](#expanding-dot-with-skills-and-activities-planned)
   - [Future Skills and Activities Repository](#future-skills-and-activities-repository)
   - [Benefits of Skills and Activities](#benefits-of-skills-and-activities)
   - [Getting Involved](#getting-involved)
@@ -59,7 +59,7 @@ Our project follows a community-oriented governance model, outlined in the [Gove
 
 ### Submitting Pull Requests
 
-1. **Fork the Repository**: Create your own fork of the Pippin repository.
+1. **Fork the Repository**: Create your own fork of the Dot repository.
 2. **Create a Branch**: Use a descriptive name, e.g., `feature/add-authentication`.
 3. **Make Your Changes**: Follow the existing code style and project goals.
 4. **Write Tests**: Include tests to maintain code quality.
@@ -113,7 +113,7 @@ Our project follows a community-oriented governance model, outlined in the [Gove
 4. **Milestone Assignment**: Assign issues to upcoming releases based on priority.
 5. **Regular Review**: Periodically reassess open issues to adjust priorities as needed.
 
-## Keeping Pippin Simple
+## Keeping Dot Simple
 
 - **Minimal Integrations**: Avoid unnecessary integrations. Focus on core functionalities.
 - **Modular Design**: Encourage modularity to allow users to extend functionality without bloating the framework.
@@ -131,22 +131,22 @@ Our project follows a community-oriented governance model, outlined in the [Gove
 
 ## External Integrations
 
-- **Prefer External APIs**: Integrate external APIs outside the core framework. Composio is a good option, but it would be great to look into setting up a Pippin Skills/Activities repository we can pull from.
+- **Prefer External APIs**: Integrate external APIs outside the core framework. Composio is a good option, but it would be great to look into setting up a Dot Skills/Activities repository we can pull from.
 
-## Expanding Pippin with Skills and Activities (Planned)
+## Expanding Dot with Skills and Activities (Planned)
 
-To enhance **Pippin Framework** without compromising its simplicity, we plan to introduce **Skills and Activities**—modular components that extend functionality by leveraging existing functions and integrations from other frameworks.
+To enhance **Dot Framework** without compromising its simplicity, we plan to introduce **Skills and Activities**—modular components that extend functionality by leveraging existing functions and integrations from other frameworks.
 
 ### Future Skills and Activities Repository
 
-- **Repository Name**: `pippin-skills`
+- **Repository Name**: `dot-skills`
 - **Purpose**: Centralized location for community-contributed skills and activities.
 - **Contribution**: Guidelines for contributing skills and activities will be provided once the repository is established.
 
 ### Benefits of Skills and Activities
 
 - **Modularity**: Easily integrate or remove functionalities without affecting the core.
-- **Community-Driven**: Leverage the community's expertise to expand Pippin's capabilities.
+- **Community-Driven**: Leverage the community's expertise to expand Dot's capabilities.
 - **Maintain Simplicity**: Keep the core framework lightweight by offloading extensions.
 
 ### Getting Involved
@@ -157,7 +157,7 @@ Stay tuned for updates on the **Skills and Activities Repository**. In the meant
 
 - **Dedicated Document**: Maintain a list of inspired projects, forks, and iterations. 
 - **Submit Your Project**: Add your project by opening a pull request with details.
-- **Describe Your Adaptation**: Include a brief description of how your project extends Pippin.
+- **Describe Your Adaptation**: Include a brief description of how your project extends Dot.
 
 ## Additional Tips
 

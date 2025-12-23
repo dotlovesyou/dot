@@ -1,9 +1,9 @@
-<!-- ![Pippin, Autonomous Being Framework](media/pippin.jpg) -->
-<img src="media/pippin.jpg" alt="Alt text" width="300" height="200" >
+<!-- ![Dot, Autonomous Being Framework](media/dot.jpg) -->
+<img src="media/dot.jpg" alt="Alt text" width="300" height="200" >
 
-# Pippin, The Digital Being Framework for Autonomous Agents
+# Dot, The Digital Being Framework for Autonomous Agents
 
-Welcome to Pippin — a flexible, open-source framework to create a digital “being” that:
+Welcome to Dot — a flexible, open-source framework to create a digital “being” that:
 
 - Learns about your goals/objectives and your character’s persona.
 - Connects to various tools or APIs (via API keys or OAuth flows through Composio) to perform tasks.
@@ -149,8 +149,8 @@ Fork this repo on GitHub.
 Clone your fork:
 
 ```bash
-git clone https://github.com/<your-username>/pippin-draft.git
-cd pippin-draft
+git clone https://github.com/<your-username>/dot-draft.git
+cd dot-draft
 ```
 
 ### 2. Install Dependencies (this step can be skipped if you use GitHub codespaces or the provided dev container)
@@ -572,4 +572,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file.
 
 ---
 
-That’s it! We hope you enjoy building with the Pippin Framework. Whether you want your AI to brainstorm content, spin up tokens on Solana, or implement an entirely new skill from scratch, we’ve got you covered. If you have any questions or suggestions, please reach out or open an issue—happy hacking!
+That’s it! We hope you enjoy building with the Dot Framework. Whether you want your AI to brainstorm content, spin up tokens on Solana, or implement an entirely new skill from scratch, we’ve got you covered. If you have any questions or suggestions, please reach out or open an issue—happy hacking!
