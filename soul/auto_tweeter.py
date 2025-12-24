@@ -7,8 +7,18 @@ import asyncio
 import json
 import random
 import hashlib
+import sys
+import os
 from datetime import datetime
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv(Path(__file__).parent.parent / ".env")
+
+# Fix Windows console encoding for emojis
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 # Track posted tweets to avoid duplicates
 HISTORY_FILE = Path(__file__).parent / "tweet_history.json"
@@ -214,6 +224,8 @@ async def auto_tweet_loop(interval_hours=1):
     print("  Dot's Auto Tweeter")
     print(f"  Tweeting every {interval_hours} hour(s)")
     print("=" * 50)
+    print()
+    print("Posting first tweet now...")
 
     interval_seconds = interval_hours * 60 * 60
 
@@ -229,6 +241,7 @@ async def auto_tweet_loop(interval_hours=1):
         # Wait for next interval
         next_tweet = datetime.now().timestamp() + interval_seconds
         print(f"Next tweet at: {datetime.fromtimestamp(next_tweet).strftime('%H:%M')}")
+        print("(Press Ctrl+C to stop)")
         await asyncio.sleep(interval_seconds)
 
 
