@@ -199,11 +199,45 @@ async def generate_unique_tweet():
     return f"{tweet} [{datetime.now().strftime('%H:%M')}]"
 
 
-async def post_tweet(text):
-    """Post the tweet using browser automation."""
+async def generate_image_for_tweet(tweet_text):
+    """Generate an image for a tweet using Grok (if API key is set)."""
+    try:
+        from grok_image import generate_dot_image
+
+        if not os.getenv("XAI_API_KEY"):
+            return None  # No API key, skip image generation
+
+        print("Generating image with Grok...")
+        result = await generate_dot_image(tweet_text)
+
+        if result.get("success"):
+            print(f"Image generated: {result['image_path']}")
+            return result["image_path"]
+        else:
+            print(f"Image generation failed: {result.get('error')}")
+            return None
+
+    except Exception as e:
+        print(f"Image generation error: {e}")
+        return None
+
+
+async def post_tweet(text, with_image=True):
+    """Post the tweet using browser automation, optionally with an image."""
     from twitter_browser import tweet_text
 
-    result = await tweet_text(text)
+    image_path = None
+
+    # Try to generate image if enabled and API key is set
+    if with_image:
+        image_path = await generate_image_for_tweet(text)
+
+    # Post with or without image
+    if image_path:
+        from tweet_image import tweet_with_image
+        result = await tweet_with_image(text, image_path)
+    else:
+        result = await tweet_text(text)
 
     if result.get("success"):
         # Save to history
@@ -211,7 +245,10 @@ async def post_tweet(text):
         history["tweets"].append(text)
         history["hashes"].append(get_tweet_hash(text))
         save_tweet_history(history)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Tweeted: {text}")
+        msg = f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Tweeted: {text}"
+        if image_path:
+            msg += " (with image)"
+        print(msg)
     else:
         print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M')}] Failed: {result.get('error')}")
 
