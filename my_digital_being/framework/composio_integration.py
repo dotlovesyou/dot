@@ -18,7 +18,15 @@ from typing import Dict, Any, List
 import requests  # Used for the direct Composio API call
 
 from .secret_storage import secret_manager
-from composio_openai import ComposioToolSet
+# Try importing ComposioToolSet
+try:
+    from composio_openai import ComposioToolSet
+except ImportError:
+    try:
+        from composio import Composio as ComposioToolSet
+    except ImportError:
+        class ComposioToolSet:
+            def __init__(self, *args, **kwargs): pass
 
 logger = logging.getLogger(__name__)
 
