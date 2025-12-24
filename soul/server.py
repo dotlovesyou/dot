@@ -13,10 +13,21 @@ This can run standalone or integrate with the full OpenSouls engine later.
 import json
 import asyncio
 import logging
+import os
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 from aiohttp import web
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+try:
+    import tweepy
+    TWITTER_AVAILABLE = True
+except ImportError:
+    TWITTER_AVAILABLE = False
+    logging.warning("Tweepy not installed. Twitter features disabled.")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,6 +36,7 @@ logger = logging.getLogger(__name__)
 STORAGE_DIR = Path(__file__).parent / "storage"
 MEMORY_FILE = STORAGE_DIR / "working_memory.json"
 STATE_FILE = STORAGE_DIR / "soul_state.json"
+TWEETS_FILE = STORAGE_DIR / "tweets.json"  # Mock tweets storage
 
 
 class DotSoul:
@@ -34,6 +46,40 @@ class DotSoul:
         self.name = "Dot"
         self.working_memory: List[Dict[str, Any]] = []
         self.long_term_memory: List[Dict[str, Any]] = []
+
+        # Initialize Twitter client (or use mock mode)
+        self.twitter_client = None
+        self.mock_mode = os.getenv("TWITTER_MOCK_MODE", "true").lower() == "true"
+
+        if self.mock_mode:
+            logger.info("Twitter running in MOCK MODE - tweets saved to file")
+            self._load_mock_tweets()
+        elif TWITTER_AVAILABLE:
+            try:
+                api_key = os.getenv("TWITTER_API_KEY")
+                api_secret = os.getenv("TWITTER_API_SECRET")
+                access_token = os.getenv("TWITTER_ACCESS_TOKEN")
+                access_secret = os.getenv("TWITTER_ACCESS_SECRET")
+
+                if all([api_key, api_secret, access_token, access_secret]):
+                    self.twitter_client = tweepy.Client(
+                        consumer_key=api_key,
+                        consumer_secret=api_secret,
+                        access_token=access_token,
+                        access_token_secret=access_secret
+                    )
+                    logger.info("Twitter client initialized")
+                else:
+                    logger.warning("Twitter credentials not found - using mock mode")
+                    self.mock_mode = True
+                    self._load_mock_tweets()
+            except Exception as e:
+                logger.warning(f"Failed to initialize Twitter: {e} - using mock mode")
+                self.mock_mode = True
+                self._load_mock_tweets()
+
+        self.mock_tweets: List[Dict[str, Any]] = []
+
         self.emotional_state = {
             "curiosity": 0.9,
             "friendliness": 0.8,
@@ -52,6 +98,28 @@ class DotSoul:
             "emotional_stability": 0.8
         }
         self._load_state()
+
+    def _load_mock_tweets(self):
+        """Load mock tweets from disk."""
+        if TWEETS_FILE.exists():
+            try:
+                with open(TWEETS_FILE, "r") as f:
+                    self.mock_tweets = json.load(f)
+                logger.info(f"Loaded {len(self.mock_tweets)} mock tweets")
+            except Exception as e:
+                logger.error(f"Failed to load mock tweets: {e}")
+                self.mock_tweets = []
+        else:
+            self.mock_tweets = []
+
+    def _save_mock_tweets(self):
+        """Save mock tweets to disk."""
+        try:
+            STORAGE_DIR.mkdir(exist_ok=True)
+            with open(TWEETS_FILE, "w") as f:
+                json.dump(self.mock_tweets, f, indent=2)
+        except Exception as e:
+            logger.error(f"Failed to save mock tweets: {e}")
 
     def _load_state(self):
         """Load persisted state from disk."""
@@ -231,12 +299,198 @@ class DotSoul:
             "total_memories": len(self.working_memory) + len(self.long_term_memory)
         }
 
+    def tweet(self, text: str) -> Dict[str, Any]:
+        """Post a tweet from Dot's account (or mock it)."""
+        import uuid
+
+        # Mock mode - save to file instead of posting
+        if self.mock_mode:
+            tweet_id = f"mock_{uuid.uuid4().hex[:12]}"
+            mock_tweet = {
+                "id": tweet_id,
+                "text": text,
+                "timestamp": datetime.now().isoformat(),
+                "mock": True
+            }
+            self.mock_tweets.append(mock_tweet)
+            self._save_mock_tweets()
+
+            # Record as memory
+            self.add_memory(
+                memory_type="tweet",
+                content=f"Tweeted (mock): {text}",
+                importance=0.6
+            )
+
+            # Update emotional state
+            self.emotional_state["energy"] = max(0.2, self.emotional_state["energy"] - 0.05)
+            self.emotional_state["playfulness"] = min(1.0, self.emotional_state["playfulness"] + 0.1)
+            self._save_state()
+
+            logger.info(f"[MOCK] Tweet saved: {text[:50]}...")
+
+            return {
+                "success": True,
+                "tweet": text,
+                "tweet_id": tweet_id,
+                "mock": True,
+                "message": "Tweet saved locally (mock mode). Set TWITTER_MOCK_MODE=false to post real tweets."
+            }
+
+        # Try browser automation mode
+        use_browser = os.getenv("TWITTER_USE_BROWSER", "false").lower() == "true"
+        if use_browser:
+            try:
+                import asyncio
+                from twitter_browser import tweet_text
+                result = asyncio.run(tweet_text(text))
+
+                if result.get("success"):
+                    self.add_memory(
+                        memory_type="tweet",
+                        content=f"Tweeted (browser): {text}",
+                        importance=0.6
+                    )
+                    self.emotional_state["energy"] = max(0.2, self.emotional_state["energy"] - 0.05)
+                    self.emotional_state["playfulness"] = min(1.0, self.emotional_state["playfulness"] + 0.1)
+                    self._save_state()
+                    logger.info(f"[BROWSER] Tweet posted: {text[:50]}...")
+
+                return result
+            except Exception as e:
+                logger.error(f"Browser tweet failed: {e}")
+                return {"success": False, "error": f"Browser automation failed: {e}"}
+
+        # Real Twitter API mode
+        if not TWITTER_AVAILABLE or not self.twitter_client:
+            return {
+                "success": False,
+                "error": "Twitter not configured. Set TWITTER_API_KEY or TWITTER_USE_BROWSER=true in .env"
+            }
+
+        try:
+            response = self.twitter_client.create_tweet(text=text)
+
+            self.add_memory(
+                memory_type="tweet",
+                content=f"Tweeted: {text}",
+                importance=0.6
+            )
+
+            self.emotional_state["energy"] = max(0.2, self.emotional_state["energy"] - 0.05)
+            self.emotional_state["playfulness"] = min(1.0, self.emotional_state["playfulness"] + 0.1)
+            self._save_state()
+
+            logger.info(f"Tweet posted: {text[:50]}...")
+
+            return {
+                "success": True,
+                "tweet": text,
+                "tweet_id": response.data["id"] if response.data else None
+            }
+        except Exception as e:
+            logger.error(f"Failed to tweet: {e}")
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    def get_tweets(self) -> Dict[str, Any]:
+        """Get all mock tweets."""
+        return {
+            "mock_mode": self.mock_mode,
+            "tweets": self.mock_tweets if self.mock_mode else [],
+            "count": len(self.mock_tweets) if self.mock_mode else 0
+        }
+
 
 # Create global soul instance
 dot_soul = DotSoul()
 
 
 # HTTP API handlers
+async def index_handler(request):
+    """Homepage with Dot's soul status."""
+    state = dot_soul.get_state()
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Dot's Soul</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                max-width: 800px;
+                margin: 50px auto;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+            }}
+            .card {{
+                background: white;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            }}
+            h1 {{ color: #e74c3c; text-align: center; }}
+            .ladybug {{ font-size: 60px; text-align: center; }}
+            .status {{
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 10px;
+                margin: 15px 0;
+            }}
+            .emotion {{
+                display: inline-block;
+                margin: 5px;
+                padding: 8px 15px;
+                background: #3498db;
+                color: white;
+                border-radius: 20px;
+                font-size: 14px;
+            }}
+            .mental {{
+                color: #9b59b6;
+                font-size: 24px;
+                text-align: center;
+                font-weight: bold;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="ladybug">🐞</div>
+            <h1>Dot's Soul</h1>
+            <p class="mental">Mental State: {state['mental_process'].upper()}</p>
+
+            <div class="status">
+                <h3>Emotional State</h3>
+                {''.join(f'<span class="emotion">{k}: {v:.0%}</span>' for k, v in state['emotional_state'].items())}
+            </div>
+
+            <div class="status">
+                <h3>Memories</h3>
+                <p>Working Memory: {state['working_memory_size']} items</p>
+                <p>Long-term Memory: {state['long_term_memory_size']} items</p>
+            </div>
+
+            <div class="status">
+                <h3>API Endpoints</h3>
+                <ul>
+                    <li><code>GET /health</code> - Health check</li>
+                    <li><code>GET /souls/dot/state</code> - Get soul state</li>
+                    <li><code>POST /souls/dot/perceive</code> - Send perception</li>
+                    <li><code>POST /souls/dot/transition</code> - Change mental state</li>
+                    <li><code>POST /souls/dot/memory</code> - Add memory</li>
+                </ul>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    return web.Response(text=html, content_type='text/html')
+
+
 async def health_handler(request):
     """Health check endpoint."""
     return web.json_response({"status": "ok", "soul": "Dot"})
@@ -291,14 +545,44 @@ async def memory_handler(request):
         return web.json_response({"error": str(e)}, status=500)
 
 
+async def tweet_handler(request):
+    """Post a tweet from Dot."""
+    try:
+        data = await request.json()
+        text = data.get("text", "")
+
+        if not text:
+            return web.json_response({"error": "Tweet text is required"}, status=400)
+
+        if len(text) > 280:
+            return web.json_response({"error": "Tweet exceeds 280 characters"}, status=400)
+
+        result = dot_soul.tweet(text)
+        return web.json_response(result)
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+
+async def tweets_handler(request):
+    """Get all tweets (mock mode)."""
+    try:
+        result = dot_soul.get_tweets()
+        return web.json_response(result)
+    except Exception as e:
+        return web.json_response({"error": str(e)}, status=500)
+
+
 def create_app():
     """Create the web application."""
     app = web.Application()
+    app.router.add_get("/", index_handler)
     app.router.add_get("/health", health_handler)
     app.router.add_get("/souls/dot/state", state_handler)
     app.router.add_post("/souls/dot/perceive", perceive_handler)
     app.router.add_post("/souls/dot/transition", transition_handler)
     app.router.add_post("/souls/dot/memory", memory_handler)
+    app.router.add_post("/souls/dot/tweet", tweet_handler)
+    app.router.add_get("/souls/dot/tweets", tweets_handler)
     return app
 
 

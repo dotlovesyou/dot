@@ -5,6 +5,11 @@ my_digital_being/config/
 # Environment variables
 .env
 
+# Twitter cookies (sensitive - contains auth tokens!)
+soul/twitter_cookies.json
+soul/browser_session/
+soul/tweet_history.json
+
 # Python
 __pycache__/
 *.py[cod]
