@@ -28,5 +28,14 @@
     "model_name": "openai/gpt-4o-mini",
     "required_api_keys": [],
     "api_key_mapping": {}
+  },
+  "opensoul": {
+    "enabled": true,
+    "soul_name": "dot",
+    "soul_engine_url": "http://localhost:3000",
+    "required_api_keys": ["OPENAI"],
+    "api_key_mapping": {
+      "OPENAI": "OPENAI_API_KEY"
+    }
   }
 }

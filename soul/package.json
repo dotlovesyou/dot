@@ -1,0 +1,16 @@
+{
+  "name": "dot-soul",
+  "version": "1.0.0",
+  "description": "Dot the Ladybug's Soul for OpenSouls Soul Engine",
+  "main": "soul.ts",
+  "scripts": {
+    "dev": "soul-engine dev",
+    "start": "soul-engine start"
+  },
+  "dependencies": {
+    "@opensouls/soul": "^0.1.46"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
